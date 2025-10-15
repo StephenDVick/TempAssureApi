@@ -1,0 +1,174 @@
+﻿openapi: 3.1.0
+info:
+  title: TempAssure API
+  description: API for Temp Assure quality control system, enabling temperature validation, deviation approvals, and analytics for logistics compliance.
+  version: 1.0.0
+servers:
+  - url: https://api.tempassure.com/v1
+    description: Production server
+  - url: http://localhost:5001
+    description: Local development server
+paths:
+  /api/temps/validate:
+    post:
+      summary: Validate temperature reading against thresholds
+      description: Validates a temperature reading for a pallet position against vendor-specific thresholds and FDA guidelines.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [palletPosition, temperature, poId]
+              properties:
+                palletPosition:
+                  type: string
+                  enum: [top, middle, bottom]
+                  description: Position of the pallet where the temperature is measured.
+                temperature:
+                  type: number
+                  format: float
+                  description: Temperature reading in Celsius.
+                poId:
+                  type: integer
+                  description: Purchase Order ID for tracking.
+      responses:
+        '200':
+          description: Temperature validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isCompliant:
+                    type: boolean
+                    description: Whether the temperature is within thresholds.
+                  deviationReason:
+                    type: string
+                    nullable: true
+                    description: Reason if non-compliant.
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/deviations/approve:
+    put:
+      summary: Approve temperature deviation
+      description: Allows partners to approve a temperature deviation using a secure PIN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pin, poId, deviationId]
+              properties:
+                pin:
+                  type: string
+                  description: Secure PIN for partner authentication.
+                poId:
+                  type: integer
+                  description: Purchase Order ID.
+                deviationId:
+                  type: integer
+                  description: ID of the deviation to approve.
+      responses:
+        '200':
+          description: Deviation approved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [approved, rejected]
+                    description: Approval status.
+        '401':
+          description: Unauthorized - Invalid PIN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Deviation or PO not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/reports/daily:
+    get:
+      summary: Retrieve daily analytics report
+      description: Generates a daily report with PO-level tracking and vendor/carrier performance, compatible with Power BI dashboards.
+      parameters:
+        - name: vendor
+          in: query
+          schema:
+            type: string
+          description: Filter by vendor name.
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2025-10-15
+          description: Date of the report.
+      responses:
+        '200':
+          description: Daily report data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reportId:
+                    type: integer
+                    description: Unique report ID.
+                  poData:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PoData'
+                  vendorMetrics:
+                    type: object
+                    properties:
+                      rejectedSkuCount:
+                        type: integer
+                        description: Number of rejected SKUs by vendor.
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    PoData:
+      type: object
+      properties:
+        poId:
+          type: integer
+          description: Purchase Order ID.
+        temperatureReadings:
+          type: array
+          items:
+            type: object
+            properties:
+              palletPosition:
+                type: string
+                enum: [top, middle, bottom]
+              temperature:
+                type: number
+                format: float
+      description: Purchase Order temperature data.
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error description.
+        code:
+          type: string
+          description: Error code.
+      description: Standard error response.
