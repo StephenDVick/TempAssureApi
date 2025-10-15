@@ -9,6 +9,8 @@ public class AppDbContext : DbContext
 
     public DbSet<TempQcPo> TempQcPos => Set<TempQcPo>();
     public DbSet<TempQcProduct> TempQcProducts => Set<TempQcProduct>();
+    public DbSet<VendorThreshold> VendorThresholds => Set<VendorThreshold>();
+    public DbSet<OverrideApproval> OverrideApprovals => Set<OverrideApproval>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +33,27 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Sku).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Position).HasMaxLength(20).IsRequired();
+        });
+
+        modelBuilder.Entity<VendorThreshold>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Vendor).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Sku).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Position).HasMaxLength(20).IsRequired();
+
+            entity.HasIndex(e => new { e.Vendor, e.Sku, e.Position }).IsUnique();
+        });
+
+        modelBuilder.Entity<OverrideApproval>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.PinLast4).HasMaxLength(10).IsRequired();
+
+            entity.HasOne(e => e.TempQcProduct)
+                  .WithMany()
+                  .HasForeignKey(e => e.TempQcProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
