@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Controllers;
 
-internal class TemperatureService : ITemperatureService
+internal class StubTemperatureService : ITemperatureService
 {
     private readonly TemperatureValidationResult _result;
 
-    public TemperatureService(TemperatureValidationResult result)
+    public StubTemperatureService(TemperatureValidationResult result)
     {
         _result = result;
     }
@@ -19,12 +19,7 @@ internal class TemperatureService : ITemperatureService
 
     public Task<TemperatureValidationResult> CheckThresholdAsync(TemperatureReading reading, CancellationToken cancellationToken)
     {
+        // Stub implementation returns the same result as ValidateAsync
         return Task.FromResult(_result);
     }
-}
-
-public interface ITemperatureService
-{
-    Task<TemperatureValidationResult> ValidateAsync(TemperatureReading reading, CancellationToken ct);
-    Task<TemperatureValidationResult> CheckThresholdAsync(TemperatureReading reading, CancellationToken cancellationToken);
 }

@@ -6,24 +6,21 @@ namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TemperatureController(ITemperatureService service) : ControllerBase
+public class TemperatureController : ControllerBase
 {
-    private readonly ITemperatureService _service = service;
+    private readonly ITemperatureService _service;
+
+    public TemperatureController(ITemperatureService service)
+    {
+        _service = service;
+    }
 
     [HttpPost("validate")]
-    public async Task<IActionResult> ValidateTemperature([FromBody] TemperatureReading reading, CancellationToken ct)
+    public async Task<ActionResult<TemperatureValidationResult>> ValidateTemperature([FromBody] TemperatureReading reading, CancellationToken ct)
     {
         if (reading is null) return BadRequest("Reading payload required.");
 
         var result = await _service.CheckThresholdAsync(reading, ct);
-
-        // Todo: If not compliant, you could kick off an override/notification flow here.
-        return Ok(new
-        {
-            Compliant = result.Compliant,
-            Deviations = result.Deviations,
-            ProductId = result.ProductId,
-            Threshold = result.Threshold
-        });
+        return Ok(result);
     }
 }

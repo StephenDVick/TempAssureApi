@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
+VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempAssureApi", "TempAssureApi.csproj", "{A5F62633-A412-42AF-B8E3-99977946C725}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempAssureApiTests", "..\TempAssureApiTests\TempAssureApiTests.csproj", "{57C7CF50-0E24-4568-88F8-3257A7403620}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A5F62633-A412-42AF-B8E3-99977946C725}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5F62633-A412-42AF-B8E3-99977946C725}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5F62633-A412-42AF-B8E3-99977946C725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57C7CF50-0E24-4568-88F8-3257A7403620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57C7CF50-0E24-4568-88F8-3257A7403620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57C7CF50-0E24-4568-88F8-3257A7403620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57C7CF50-0E24-4568-88F8-3257A7403620}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
