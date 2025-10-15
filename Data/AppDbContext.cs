@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<TempQcProduct> TempQcProducts => Set<TempQcProduct>();
     public DbSet<VendorThreshold> VendorThresholds => Set<VendorThreshold>();
     public DbSet<OverrideApproval> OverrideApprovals => Set<OverrideApproval>();
+    public DbSet<TempQcUnloadedBy> TempQcUnloadedBys => Set<TempQcUnloadedBy>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,6 +54,17 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.TempQcProduct)
                   .WithMany()
                   .HasForeignKey(e => e.TempQcProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<TempQcUnloadedBy>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UnloadedBy).HasMaxLength(100).IsRequired();
+
+            entity.HasOne(e => e.TempQcPo)
+                  .WithMany()
+                  .HasForeignKey(e => e.TempQcPoId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }
